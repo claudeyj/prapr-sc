@@ -27,8 +27,9 @@ Then run the following commands to run your program with the plugin:
 mvn clean test -DskipTests -Dhttps.Protocols=TLSv1.2
 mvn org.mudebug:prapr-plugin:prapr -Dhttps.protocols=TLSv1.2 -e
 ```
+## Former Readme.md
 
-## Build
+### Build
 The source code is written to be compatible with JDK 1.7 and higher. Please use the following command to install the plugin:
 
 ```sh
@@ -55,7 +56,7 @@ If you are using PraPR for Defects4J, it is preferrable to compile the project u
 mvn clean install -Dhttps.protocols=TLSv1.2
 ```
 
-## Credit
+### Credit
 
 This repository contains source code for PraPR written by Ali Ghanbari over year 2018.
 
