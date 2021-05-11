@@ -1,6 +1,35 @@
 # Source code for PraPR
 
-## Build
+## Comments Added by Jun Yang
+To install this plugin, run `mvn clean install -Dhttps.protocols=TLSv1.2` in the cmd. You can check the plugin version in `pom.xml` and you can add this plugin to your maven project with corresponding dependency format, e.g.
+```
+<plugin>
+  <groupId>org.mudebug</groupId>
+  <artifactId>prapr-plugin</artifactId>
+  <version>2.0.3-DEV</version>
+  <configuration>
+    <threads>1</threads>
+    <mutators>
+      <mutator>ALL</mutator>
+    </mutators>
+    <failingTests>
+      <failingTest>
+        <!-- At least one failing test -->
+      </failingTest>
+    </failingTests>
+    <outputFormats>
+    </outputFormats>
+  </configuration>
+</plugin>
+```
+Then run the following commands to run your program with the plugin:
+```sh
+mvn clean test -DskipTests -Dhttps.Protocols=TLSv1.2
+mvn org.mudebug:prapr-plugin:prapr -Dhttps.protocols=TLSv1.2 -e
+```
+## Former Readme.md
+
+### Build
 The source code is written to be compatible with JDK 1.7 and higher. Please use the following command to install the plugin:
 
 ```sh
@@ -27,7 +56,7 @@ If you are using PraPR for Defects4J, it is preferrable to compile the project u
 mvn clean install -Dhttps.protocols=TLSv1.2
 ```
 
-## Credit
+### Credit
 
 This repository contains source code for PraPR written by Ali Ghanbari over year 2018.
 
