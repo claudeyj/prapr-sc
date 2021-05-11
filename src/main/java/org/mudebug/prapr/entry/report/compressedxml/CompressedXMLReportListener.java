@@ -33,11 +33,18 @@ import static org.mudebug.prapr.entry.report.compressedxml.Tag.mutation;
 import static org.mudebug.prapr.entry.report.compressedxml.Tag.mutator;
 import static org.mudebug.prapr.entry.report.compressedxml.Tag.suspValue;
 import static org.mudebug.prapr.entry.report.compressedxml.Tag.sourceFile;
+import static org.mudebug.prapr.entry.report.compressedxml.Tag.patchExecutionTime;
+// import static org.mudebug.prapr.entry.report.compressedxml.Tag.testsExecutionTime;
+import static org.mudebug.prapr.entry.report.compressedxml.Tag.test;
+import static org.mudebug.prapr.entry.report.compressedxml.Tag.time;
+import static org.mudebug.prapr.entry.report.compressedxml.Tag.name;
 
 import java.io.IOException;
 import java.io.Writer;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.mudebug.prapr.core.SuspStrategy;
 import org.mudebug.prapr.entry.report.Commons;
@@ -63,7 +70,12 @@ enum Tag {
     killingTests,
     description,
     suspValue,
-    block;
+    block,
+    patchExecutionTime,
+    test,
+    time,
+    name;
+    // testsExecutionTime;
 }
 
 /**
@@ -75,6 +87,8 @@ public class CompressedXMLReportListener implements MutationResultListener {
     private final SuspStrategy suspStrategy;
     private final Collection<String> failingTests;
     private final int allTestsCount;
+    private final String patchExecutionTimePoolPath = "target/patch-execution-time-pool.txt";
+    private final String testsExecutionTimePoolPath = "target/tests-of-patch-execution-time-pool.txt";
 
     public CompressedXMLReportListener(final CompressedDirectoryResultOutputStrategy outputStrategy,
                                        final SuspStrategy suspStrategy,
@@ -112,6 +126,9 @@ public class CompressedXMLReportListener implements MutationResultListener {
 
     private String makeMutationNode(final MutationResult mutation) {
         final MutationDetails details = mutation.getDetails();
+        //set execution time
+        // details.setPatchExecutionTime(Long.parseLong(getTimeOfExecutions(details)));
+        // String tests = createCoveringTestsDesc(details.getTestsInOrder());
         return makeNode(clean(details.getFilename()), sourceFile)
                 + makeNode(clean(details.getClassName().asJavaName()), mutatedClass)
                 + makeNode(clean(details.getMethod().name()), mutatedMethod)
@@ -120,10 +137,13 @@ public class CompressedXMLReportListener implements MutationResultListener {
                 + makeNode(clean(details.getMutator()), mutator)
                 + makeNode("" + details.getFirstIndex(), index)
                 + makeNode("" + details.getBlock(), block)
-                + makeNode(createCoveringTestsDesc(details.getTestsInOrder()), coveringTests)
+                // + makeNode(createCoveringTestsDesc(details.getTestsInOrder()), coveringTests)
+                + makeNode("" + getTestNodes(details.getTestsInOrder(), getTimeOfTestsMap(details)), coveringTests)
                 + makeNode(createAllKillingTestDesc(mutation.getStatusTestPair().getKillingTest()), killingTests)
                 + makeNode(Double.toString(getSusp(details)), suspValue)
-                + makeNode(clean(details.getDescription()), description);
+                + makeNode(clean(details.getDescription()), description)
+                + makeNode(getTimeOfExecutions(details), patchExecutionTime);
+                // + makeNode(getTimeOfTests(details), testsExecutionTime);
     }
 
     private double getSusp(final MutationDetails details) {
@@ -177,6 +197,68 @@ public class CompressedXMLReportListener implements MutationResultListener {
         } catch (final IOException e) {
             throw Unchecked.translateCheckedException(e);
         }
+    }
+
+    /**
+     * get patch execution time information from pool
+     * Author: Jun Yang
+     */
+    private String getTimeOfExecutions(MutationDetails md)
+    {
+        String targetDetails = md.toString();
+        String pool = Commons.readToString(this.patchExecutionTimePoolPath).trim();
+        String[] mutations = pool.split("\n");
+        for (String mutation : mutations)
+        {
+            String details = mutation.split("\t")[0];
+            String time = mutation.split("\t")[1];
+            if (details.equals(targetDetails))
+            {
+                return time;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * get time of each test on patch
+     * Author : Jun Yang
+     */
+    private Map<String, String> getTimeOfTestsMap(MutationDetails md)
+    {
+        String targetDetails = md.toStringNoTestsInOrder();
+        String pool = Commons.readToString(this.testsExecutionTimePoolPath).trim();
+        String[] mutations = pool.split("\n");
+        Map<String, String> testTimeMap = new HashMap<>();
+        for (String mutation : mutations)
+        {
+            String mutationDetails = mutation.split("\t")[0];
+            String testDescription = mutation.split("\t")[1];
+            String time = mutation.split("\t")[2];
+            if (mutationDetails.equals(targetDetails))
+            {
+                testTimeMap.put(testDescription, time);
+            }
+        }
+        return testTimeMap;
+    }
+
+    /**
+     * Prepare to make test time nodes
+     * Author: Jun Yang
+     */
+    private String getTestNodes(List<TestInfo> tis, Map<String, String> testTimeMap)
+    {
+        String testNodes = "";
+        for (TestInfo ti : tis)
+        {
+            // String testNode = makeNode(testTimeMap.get(ti.toString()), te, coveringTests);
+            String nameNode = makeNode(ti.toString(), name);
+            String timeNode = makeNode(testTimeMap.get(ti.toString()), time);
+            String testNode = makeNode(nameNode + timeNode, test);
+            testNodes += testNode;
+        }
+        return testNodes;
     }
 
     @Override

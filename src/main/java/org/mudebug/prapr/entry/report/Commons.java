@@ -25,6 +25,12 @@ import org.mudebug.prapr.core.commons.TestCaseUtil;
 import org.pitest.coverage.TestInfo;
 import org.pitest.mutationtest.engine.MutationDetails;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.Collection;
 import java.util.HashSet;
 
@@ -65,5 +71,59 @@ public final class Commons {
         final int nf = failingTests.size();
         final int np = allTestsCount - allFailingTestsCount - ep;
         return suspStrategy.computeSusp(ef, ep, nf, np);
+    }
+
+    /**
+     * Author: Jun Yang
+     * @param poolPath
+     * @param content
+     */
+    public static void addContentToPool(String poolPath, String content) {
+        FileWriter fw = null;
+        try {
+          File f=new File(poolPath);
+          fw = new FileWriter(f, true);
+          } catch (IOException e) {
+          e.printStackTrace();
+          }
+          PrintWriter pw = new PrintWriter(fw);
+          pw.println(content);
+          pw.flush();
+          try {
+          fw.flush();
+          pw.close();
+          fw.close();
+          } catch (IOException e) {
+          e.printStackTrace();
+          }
+        }
+
+    /**
+     * Author: Jun Yang
+     * @param fileName
+     * @return
+     */
+    public static String readToString(String fileName) {
+      // String encoding = "ISO-8859-1";
+      File file = new File(fileName);
+      Long filelength = file.length();
+      byte[] filecontent = new byte[filelength.intValue()];
+      try {
+        FileInputStream in = new FileInputStream(file);
+        in.read(filecontent);
+        in.close();
+      } catch (FileNotFoundException e) {
+        e.printStackTrace();
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+      // try {
+        // return new String(filecontent, encoding);
+        return new String(filecontent);
+      // } catch (UnsupportedEncodingException e) {
+      //   System.err.println("The OS does not support " + encoding);
+      //   e.printStackTrace();
+      //   return null;
+      // }
     }
 }
