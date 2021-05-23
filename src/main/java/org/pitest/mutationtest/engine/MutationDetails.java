@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.mudebug.prapr.entry.report.Commons;
 import org.pitest.classinfo.ClassName;
 import org.pitest.coverage.ClassLine;
 import org.pitest.coverage.TestInfo;
@@ -50,7 +51,8 @@ public final class MutationDetails implements Serializable {
   private final boolean             isInFinallyBlock;
   private final PoisonStatus        poison;
   private long                      patchExecutionTime = 0;
-  private final Map<Description, Long> mutationTestsTime = new HashMap<>();         
+  private Map<String, Long> mutationTestsTime = new HashMap<>();         
+  private Map<Description, Long> mutationDescTestsTime = new HashMap<>();
 
   public MutationDetails(final MutationIdentifier id, final String filename,
       final String description, final int lineNumber, final int block) {
@@ -274,7 +276,7 @@ public final class MutationDetails implements Serializable {
 
   /**
    * Record time of executing a patch
-   * Author: Jun Yang
+   * @author: Jun Yang
    */
   public void setPatchExecutionTime(long time)
   {
@@ -283,16 +285,16 @@ public final class MutationDetails implements Serializable {
 
   /**
    * Add time of running a test on the patch
-   * Author: Jun Yang
+   * @author: Jun Yang
    */
   public void addTestTime(Description ds, long time)
   {
-      this.mutationTestsTime.put(ds, time);
+      this.mutationDescTestsTime.put(ds, time);
   }
 
   /**
    * Get time of executing the patch
-   * Author: Jun Yang
+   * @author: Jun Yang
    */
   public long getPatchExecutionTime()
   {
@@ -301,18 +303,30 @@ public final class MutationDetails implements Serializable {
 
   /**
    * Get time of tests of the patch
-   * Author: Jun Yang
+   * @author: Jun Yang
    */
-  public Map<Description, Long> getTestTimeMap()
+  public Map<String, Long> getTestsTimeMap()
   {
-      return this.mutationTestsTime;
+      return Commons.getStringMapFromDescMap(this.mutationDescTestsTime);
   }
 
-  public String toStringNoTestsInOrder() {
-    return "MutationDetails [id=" + id + ", filename=" + filename + ", block="
-        + block + ", lineNumber=" + lineNumber + ", description=" + description
-        + ", testsInOrder=[]" + ", isInFinallyBlock="
-        + isInFinallyBlock + ", poison=" + poison + "]";
+  public Map<Description, Long> getDescTestsTimeMap()
+  {
+      return this.mutationDescTestsTime;
+  }
+
+  /**
+   * Set time of tests of the patch
+   * @author: Jun Yang
+   */
+  public void setTestsTimeMap(Map<String, Long> mutationTestsTime)
+  {
+      this.mutationTestsTime = mutationTestsTime;
+  }
+
+  public void setDescTestTimeMap(Map<Description, Long> mutationDescTestsTime)
+  {
+      this.mutationDescTestsTime = mutationDescTestsTime;
   }
 
   @Override

@@ -24,15 +24,22 @@ import org.mudebug.prapr.core.SuspStrategy;
 import org.mudebug.prapr.core.commons.TestCaseUtil;
 import org.pitest.coverage.TestInfo;
 import org.pitest.mutationtest.engine.MutationDetails;
+import org.pitest.testapi.Description;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Ali Ghanbari (ali.ghanbari@utdallas.edu)
@@ -74,10 +81,9 @@ public final class Commons {
     }
 
     /**
-     * Author: Jun Yang
-     * @param poolPath
-     * @param content
+     * @author: Jun Yang
      */
+    @Deprecated
     public static void addContentToPool(String poolPath, String content) {
         FileWriter fw = null;
         try {
@@ -99,10 +105,11 @@ public final class Commons {
         }
 
     /**
-     * Author: Jun Yang
+     * @author: Jun Yang
      * @param fileName
      * @return
      */
+    @Deprecated
     public static String readToString(String fileName) {
       // String encoding = "ISO-8859-1";
       File file = new File(fileName);
@@ -125,5 +132,38 @@ public final class Commons {
       //   e.printStackTrace();
       //   return null;
       // }
+    }
+
+    /**
+     * 
+     * @author: Jun Yang
+     */
+    @Deprecated
+    public static List<String> readToLinesList(String fileName) {
+        List<String> linesList = new ArrayList<>();
+        
+        try {
+            BufferedReader br;
+            br = new BufferedReader(new InputStreamReader(new FileInputStream(fileName)));
+            for (String line = br.readLine(); line != null; line = br.readLine()) {
+                linesList.add(line.replace("\n", ""));
+            }
+            br.close();
+        } catch (IOException e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        }
+      return linesList;
+    }
+
+    public static <V> Map<String, V> getStringMapFromDescMap(Map<Description, V> descMap)
+    {
+        Map<String, V> stringMap = new HashMap<>();
+        for (Map.Entry<Description, V>entry : descMap.entrySet())
+        {
+            stringMap.put(entry.getKey().getFirstTestClass() + "." + entry.getKey().getName(), entry.getValue());
+        }
+
+        return stringMap;
     }
 }

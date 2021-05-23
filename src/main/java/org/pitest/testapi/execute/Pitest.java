@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
-import java.io.IOException;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 
@@ -90,36 +89,25 @@ public class Pitest {
     }
   }
 
+  //new funtion here!
   private void executeTests(final Container container,
       final List<? extends TestUnit> testUnits, Mutant mutedClass) {
     for (final TestUnit unit : testUnits) {
-        long t0 = System.currentTimeMillis();
         final List<TestResult> results = container.execute(unit);
-        long executionTime = System.currentTimeMillis() - t0;
-        boolean started = false;
         for (TestResult tr : results)
         {
-            System.out.println("STATE: " + tr.getState());
-            if (tr.getState().name().equals("STARTED"))
+            if (tr.getDescription().getName().startsWith("testExecutionTime:"))
             {
-                started = true;
-                mutedClass.getDetails().addTestTime(tr.getDescription(), executionTime);
+                String descName = tr.getDescription().getName();
+                String test = descName.substring(descName.lastIndexOf(":") + 1);
+                String testFullName = test.split("-")[0];
+                String testTime = test.split("-")[1];
+                String testClassName = testFullName.split("#")[0];
+                String testShortName = testFullName.split("#")[1];
+                mutedClass.getDetails().addTestTime(new Description(testShortName, testClassName), Long.parseLong(testTime));
             }
         }
-        if (!started)
-        {
-          System.out.println("NOT STARTED!");
-        }
         processResults(results);
-    }
-    String dirPath = "target";
-    File dir = new File(dirPath);
-    if (!dir.exists()) dir.mkdirs();
-    File testsOfPatchExecutionTimePool = new File(dirPath + "/tests-of-patch-execution-time-pool.txt");
-    for (Description testDescription : mutedClass.getDetails().getTestTimeMap().keySet())
-    {
-      Commons.addContentToPool(testsOfPatchExecutionTimePool.getAbsolutePath(), mutedClass.getDetails() + "\t" 
-      + testDescription.getFirstTestClass() + "." + testDescription.getName() + "\t" + mutedClass.getDetails().getTestTimeMap().get(testDescription) + "ms");
     }
   }
 
@@ -139,6 +127,7 @@ public class Pitest {
 
   private void processResults(final List<TestResult> results) {
     for (final TestResult result : results) {
+      if (result.getDescription().getName().startsWith("testExecutionTime-")) continue;
       final ResultType classifiedResult = classify(result);
       classifiedResult.getListenerFunction(result).apply(listener);
     }
