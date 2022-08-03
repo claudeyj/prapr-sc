@@ -21,7 +21,7 @@ package org.pitest.mutationtest.execute;
  */
 
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.pitest.functional.Option;
@@ -35,7 +35,7 @@ import java.util.logging.Logger;
 public class CheckTestHasFailedResultWithTimingListener extends CheckTestHasFailedResultListener{
     private Option<Description>          lastFailingTest        = Option.none();
     private int                          testsRun               = 0;
-    private Map<Description, Long>       testsDescExecutionTimeMap  = new HashMap<>();
+    private Map<Description, Long>       testsDescExecutionTimeMap  = new LinkedHashMap<>();
     // private long                         mutationExecutionTime  = 0;
     private static final Logger          LOG                    = Log.getLogger();
 

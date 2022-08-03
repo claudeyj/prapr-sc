@@ -21,7 +21,7 @@ package org.pitest.mutationtest;
  */
 
 import java.io.Serializable;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.pitest.functional.Option;
@@ -35,7 +35,7 @@ public final class MutationStatusTestPair implements Serializable {
   private final DetectionStatus  status;
   private final Option<String>   killingTest;
   private long                   mutationExecutionTime = 0;
-  private Map<Description, Long> testsDescExecutionTimeMap = new HashMap();
+  private Map<Description, Long> testsDescExecutionTimeMap = new LinkedHashMap();
 
   public MutationStatusTestPair(final int numberOfTestsRun,
       final DetectionStatus status) {
