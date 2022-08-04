@@ -296,6 +296,7 @@ public class LOGReportListener implements MutationResultListener {
         }
         writeln(String.format("\tFile Name: %s%s", filePath, md.getFilename()));
         writeln(String.format("\tLine Number: %d", md.getLineNumber()));
+        writeln(String.format("\tFirst Index: %d", md.getFirstIndex()));
         writeln(String.format("\tRank: %d", this.plRanks.get(md)));
         writeln(String.format("\tTotal Rank: %d", this.allRanks.get(md)));
         final File dumpFile = this.dumpFiles.get(md);
