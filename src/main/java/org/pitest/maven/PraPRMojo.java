@@ -86,6 +86,18 @@ public class PraPRMojo extends AbstractPitMojo {
     private boolean verboseReport;
 
     /**
+     * Oracle faulty class full name for perfect fault localization.
+     */
+    @Parameter(property = "oracleFaultyClass", defaultValue = "unknown")
+    private String oracleFaultyClass;
+
+    /**
+     * Oracle faulty line for perfect fault localization.
+     */
+    @Parameter(property = "oracleFaultyLine", defaultValue = "-1")
+    private int oracleFaultyLine;
+
+    /**
      * This constructor is called by Maven
      */
     public PraPRMojo() {
@@ -136,6 +148,8 @@ public class PraPRMojo extends AbstractPitMojo {
         pitReportOptions = new MojoToReportOptionsConverter(this, new SurefireConfigConverter(), this.filter)
                 .convert();
         final PraPRReportOptions data = new PraPRReportOptions(pitReportOptions);
+        data.setOracleFaultyClass(oracleFaultyClass);
+        data.setOracleFaultyLine(oracleFaultyLine);
         data.setMutationEngine("prapr");
         data.setMutateSuspStmt(SuspCheckerType.valueOf(this.mutateSuspStmt));
         data.setSuspStrategy(SuspStrategyImpl.valueOf(this.suspStrategy));
@@ -143,6 +157,8 @@ public class PraPRMojo extends AbstractPitMojo {
         data.setReorderTestCases(this.reorderTestCases);
         data.setVerboseReport(this.verboseReport);
         data.setFailWhenNoMutations(false);
+
+        log.debug("Suspicious checker type: " + this.mutateSuspStmt);
         return data;
     }
 

@@ -22,6 +22,7 @@ package org.mudebug.prapr.entry.coverage.execute;
 
 import org.mudebug.prapr.core.DefaultSuspChecker;
 import org.mudebug.prapr.core.DummySuspChecker;
+import org.mudebug.prapr.core.PerfectSuspChecker;
 import org.mudebug.prapr.core.SuspChecker;
 import org.mudebug.prapr.core.WeakSuspChecker;
 import org.mudebug.prapr.core.commons.TestCaseUtil;
@@ -316,6 +317,9 @@ public class PraPRCoverageGenerator implements CoverageGenerator {
                 return new DefaultSuspChecker(this.failingTests, this.blockCoverage.entrySet());
             case WEAK:
                 return new WeakSuspChecker(this.failingTests, this.blockCoverage.entrySet());
+            case PERFECT:
+                return new PerfectSuspChecker(this.failingTests,
+                reportOptions.getOracleFaultyClass(), reportOptions.getOracleFaultyLine());
         }
         throw new IllegalArgumentException();
     }

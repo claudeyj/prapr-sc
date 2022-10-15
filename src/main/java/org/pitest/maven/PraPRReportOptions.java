@@ -43,6 +43,10 @@ public class PraPRReportOptions extends ReportOptions {
 
     private boolean verboseReport;
 
+    private String oracleFaultyClass;
+
+    private int oracleFaultyLine;
+
     public PraPRReportOptions() {
         this.failingTests = new ArrayList<>();
     }
@@ -131,5 +135,21 @@ public class PraPRReportOptions extends ReportOptions {
 
     public void setVerboseReport(boolean verboseReport) {
         this.verboseReport = verboseReport;
+    }
+
+    public String getOracleFaultyClass() {
+        return oracleFaultyClass;
+    }
+
+    public int getOracleFaultyLine() {
+        return oracleFaultyLine;
+    }
+
+    public void setOracleFaultyClass(String oracleFaultyClass) {
+        this.oracleFaultyClass = oracleFaultyClass;
+    }
+
+    public void setOracleFaultyLine(int oracleFaultyLine) {
+        this.oracleFaultyLine = oracleFaultyLine;
     }
 }

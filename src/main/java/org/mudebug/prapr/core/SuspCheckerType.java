@@ -27,5 +27,6 @@ package org.mudebug.prapr.core;
 public enum SuspCheckerType {
     NONE,
     DEFAULT,
-    WEAK
+    WEAK,
+    PERFECT
 }
